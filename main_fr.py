@@ -105,12 +105,14 @@ def add_column() -> tuple[str, str]:
   col_name=input("\033[34mEntrez le nom de la colonne : \033[0m").lower() # Demande le nom de la colonne
   col_type=input(f"\033[34mEntrez le type de {col_name} (VARCHAR/BOOLEAN/INT/FLOAT/TIMESTAMP) : \033[0m") # Demande le type de la colonne
   if col_type == "VARCHAR":
-    col_type += f"({input('\033[34mEntrez la longueur de la colonne (0-4294967295) (255) : \033[0m')})" # Demande la longueur de la colonne si le type est VARCHAR
-    if int(col_type[8:-1]) > 4294967295:
-      print("\033[1m\033[31mLongueur invalide\033[0m")
-      col_type = "VARCHAR(255)"
-    elif not(0<= int(col_type[8:-1]) and int(col_type[8:-1]) <= 4294967295):
-      print("\033[1m\033[31mLongueur invalide\033[0m")
+    col_type_len = input('\033[34mEnter the length of the column (0-4294967295) (255): \033[0m') # Demande la longueur de la colonne si le type est VARCHAR
+    if col_type_len != "":
+      if int(col_type_len) > 4294967295:
+        print("\033[1m\033[32mInvalid length\033[0m")
+        col_type = "VARCHAR(255)"
+      else:
+        col_type = f"{col_type}({col_type_len})"
+    else:
       col_type = "VARCHAR(255)"
   elif not(col_type == "INT" or col_type == "FLOAT" or col_type == "TIMESTAMP" or col_type == "BOOLEAN"):
     print("\033[1m\033[31mType invalide\033[0m")
@@ -123,6 +125,7 @@ def create_table():
     La fonction invite ensuite l'utilisateur à ajouter des colonnes à la table.
   """
   tab_name = input("\033[34mEntrez le nom de la table : \033[0m").lower() # Demande le nom de la table.
+  bdd.execute(f"DROP TABLE IF EXISTS {tab_name}") # Supprime la table si elle existe déjà
   bdd.execute(f"CREATE TABLE IF NOT EXISTS {tab_name} (id INT AUTO_INCREMENT PRIMARY KEY)") # Crée la table avec la colonne id comme clé primaire
   print("\033[1m\033[32m# Table créée avec succès !\033[0m")
   print("\033[33m# Colonne id ajoutée avec auto-incrémentation comme clé primaire\033[0m")
